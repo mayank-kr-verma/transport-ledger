@@ -1,0 +1,46 @@
+{
+  "name": "transport-ledger",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "android:sync": "next build && cap sync android",
+    "android:open": "cap open android",
+    "android:apk": "next build && cap sync android && cd android && ./gradlew assembleDebug"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^5.4.0",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.3.0",
+    "dexie": "^4.4.3",
+    "dexie-react-hooks": "^4.4.0",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.8",
+    "lucide-react": "^1.17.0",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "react-hook-form": "^7.76.1",
+    "recharts": "^3.8.1",
+    "tailwind-merge": "^3.6.0",
+    "xlsx": "^0.18.5",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.2.1",
+    "@capacitor/cli": "^6.2.1",
+    "@capacitor/core": "^6.2.1",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
