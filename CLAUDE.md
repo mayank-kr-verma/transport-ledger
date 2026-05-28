@@ -50,6 +50,52 @@ First-run flow: app prompts for a **4-digit PIN**. Set one. PIN is hashed (PBKDF
 
 ---
 
+## Design System
+
+**Material You-inspired, saffron palette.** Custom tonal system, distinctive
+typography, mobile-first. All design tokens live in `src/app/globals.css` as
+CSS variables prefixed `--md-*`.
+
+### Palette
+- **Primary**: saffron `#ea6a14` (CTAs, FAB, brand) — warm, fits Indian transport
+- **Tertiary**: deep teal `#1f7a6a` (income / positive accents)
+- **Error**: brick `#b3261e` (expenses / debit)
+- **Surface ladder**: 8 tonal surface levels from `--md-surface` (cream) up
+  through `--md-surface-container-highest` for hierarchy
+- **On-surface text**: deep brown-black `#1f1b16` with subdued variant
+  `--md-on-surface-variant` for secondary copy
+
+### Typography
+- **Display** (`var(--font-display)`): **Bricolage Grotesque** — geometric,
+  characterful, used on h1/h2 and large numbers
+- **Body** (`var(--font-body)`): **Manrope** — friendly modern sans, all UI text
+- Both loaded via `next/font/google` in `layout.tsx` — bundled, no runtime fetch.
+
+### Shape
+Pill buttons, **20px** cards (standard), **28px** for hero cards, **999px** for
+chips/pills. Defined as `--md-radius-{xs,sm,md,lg,xl,pill}`.
+
+### Components (`src/components/ui/primitives.tsx`)
+- `<Button variant="filled|tonal|outlined|text|danger">` — pill-shaped
+- `<Fab extended icon={…}>label</Fab>` — floating action button, fixed at bottom-right
+- `<Input>`, `<Select>`, `<Textarea>` — large (h14) outlined M3 fields
+- `<Card tone="default|low|high|primary|tertiary">` — tonal surface container
+- `<ListItem leading title supporting trailing onClick>` — M3 list row
+- `<Chip tone="primary|success|danger|warning|neutral">` — status pills
+- `<PageHeader title subtitle action>` — consistent screen heads
+
+### Motion
+- `.md-rise` + `.md-rise-1` through `.md-rise-6` — staggered entrance reveal
+  (translateY + opacity)
+- `.md-pressable` — scale-on-press touch feedback
+- `.md-wallpaper` — soft saffron + teal gradient blob (hero backgrounds)
+
+### Backwards compat
+Old `Button` variants (`primary`, `secondary`, `ghost`) are aliased to
+`filled`, `tonal`, `text`. Old `<Card className>` without `tone` still works.
+
+---
+
 ## Tech Stack
 
 - **Next.js 16** (App Router, TypeScript, src dir, `@/*` alias). Turbopack default. `output: "export"` for static SPA build that Capacitor wraps.

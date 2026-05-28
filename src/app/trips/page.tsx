@@ -3,13 +3,13 @@ import Link from "next/link";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/db/schema";
 import { fmtINR } from "@/lib/inr";
-import { Button, Card, EmptyState, PageHeader } from "@/components/ui/primitives";
-import { Plus, Route } from "lucide-react";
+import { Card, Chip, EmptyState, Fab, PageHeader } from "@/components/ui/primitives";
+import { Plus, Route, ArrowRight } from "lucide-react";
 
-const statusBadge: Record<string, string> = {
-  open: "bg-amber-100 text-amber-800",
-  completed: "bg-blue-100 text-blue-800",
-  settled: "bg-green-100 text-green-800",
+const statusTone: Record<string, "warning" | "primary" | "success"> = {
+  open: "warning",
+  completed: "primary",
+  settled: "success",
 };
 
 export default function TripsPage() {
@@ -23,42 +23,54 @@ export default function TripsPage() {
     <div>
       <PageHeader
         title="Trips"
-        action={
-          <Link href="/trips/new">
-            <Button size="sm"><Plus size={16} /> New Trip</Button>
-          </Link>
-        }
+        subtitle={trips ? `${trips.length} recorded` : undefined}
       />
+
       {trips && trips.length === 0 && (
         <EmptyState
-          message="No trips yet."
-          action={<Link href="/trips/new"><Button>Record first trip</Button></Link>}
+          message="No trips yet. Tap the + button to record your first one."
         />
       )}
-      <div className="space-y-2">
-        {trips?.map((t) => (
-          <Link key={t.id} href={`/trips/edit?id=${t.id}`}>
-            <Card className="hover:bg-slate-50">
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3">
-                  <Route className="mt-1 text-slate-500" size={20} />
-                  <div>
-                    <p className="font-medium">{t.fromCity} → {t.toCity}</p>
-                    <p className="text-xs text-slate-500">
-                      {t.tripDate} · {truckMap.get(t.truckId) ?? "—"} · {partyMap.get(t.partyId) ?? "—"}
-                      {t.lrNo ? ` · LR ${t.lrNo}` : ""}
-                    </p>
-                  </div>
+
+      <div className="space-y-3">
+        {trips?.map((t, i) => (
+          <Link key={t.id} href={`/trips/edit?id=${t.id}`} className={`md-rise md-rise-${Math.min(i + 1, 6)} block`}>
+            <Card tone="low" className="md-pressable">
+              <div className="mb-3 flex items-center justify-between">
+                <Chip tone={statusTone[t.status]}>{t.status}</Chip>
+                <span className="text-[12px] text-[var(--md-on-surface-variant)]">{t.tripDate}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--md-primary-container)] text-[var(--md-on-primary-container)]">
+                  <Route size={20} />
                 </div>
-                <div className="text-right">
-                  <p className="font-semibold">{fmtINR(t.freightAmount)}</p>
-                  <span className={`mt-1 inline-block rounded px-2 py-0.5 text-xs ${statusBadge[t.status]}`}>{t.status}</span>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1.5 truncate font-display text-[18px] font-semibold leading-tight">
+                    <span className="truncate">{t.fromCity}</span>
+                    <ArrowRight size={16} className="shrink-0 text-[var(--md-on-surface-variant)]" />
+                    <span className="truncate">{t.toCity}</span>
+                  </div>
+                  <p className="mt-1 truncate text-[13px] text-[var(--md-on-surface-variant)]">
+                    {truckMap.get(t.truckId) ?? "—"} · {partyMap.get(t.partyId) ?? "—"}
+                    {t.lrNo ? ` · LR ${t.lrNo}` : ""}
+                  </p>
+                </div>
+                <div className="shrink-0 text-right">
+                  <p className="font-display text-[18px] font-semibold">{fmtINR(t.freightAmount)}</p>
                 </div>
               </div>
             </Card>
           </Link>
         ))}
       </div>
+
+      <Fab
+        extended
+        icon={<Plus size={20} />}
+        onClick={() => (window.location.href = "/trips/new/")}
+      >
+        New trip
+      </Fab>
     </div>
   );
 }

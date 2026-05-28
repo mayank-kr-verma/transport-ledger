@@ -1,44 +1,48 @@
 "use client";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/db/schema";
 import { fmtINR } from "@/lib/inr";
-import { Button, Card, EmptyState, PageHeader } from "@/components/ui/primitives";
+import { EmptyState, Fab, ListItem, PageHeader } from "@/components/ui/primitives";
 import { Plus, UserCog } from "lucide-react";
 
 async function driverBalance(driverId: number): Promise<number> {
   const d = await db.drivers.get(driverId);
   if (!d) return 0;
   const pays = await db.driverPay.where("driverId").equals(driverId).toArray();
-  // positive = we owe driver. salary increases, advance decreases.
   return pays.reduce(
     (a, p) => a + (p.type === "salary" ? p.amount : p.type === "advance" ? -p.amount : p.amount),
     d.openingBalance
   );
 }
 
-function DriverRow({ id, name, phone }: { id: number; name: string; phone?: string }) {
+function DriverRow({ id, name, phone, index }: { id: number; name: string; phone?: string; index: number }) {
+  const router = useRouter();
   const bal = useLiveQuery(() => driverBalance(id), [id]);
   return (
-    <Link href={`/drivers/view?id=${id}`}>
-      <Card className="flex items-center justify-between hover:bg-slate-50">
-        <div className="flex items-center gap-3">
-          <UserCog className="text-slate-500" size={20} />
+    <div className={`md-rise md-rise-${Math.min(index + 1, 6)}`}>
+      <ListItem
+        leading={<UserCog size={20} />}
+        title={name}
+        supporting={phone || "—"}
+        onClick={() => router.push(`/drivers/view?id=${id}`)}
+        trailing={
           <div>
-            <p className="font-medium">{name}</p>
-            <p className="text-xs text-slate-500">{phone || "—"}</p>
+            <p
+              className={
+                "font-display text-[16px] font-semibold leading-none " +
+                ((bal ?? 0) > 0 ? "text-[var(--md-error)]" : "text-[var(--md-on-surface-variant)]")
+              }
+            >
+              {bal !== undefined ? fmtINR(Math.abs(bal)) : "…"}
+            </p>
+            <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.06em] text-[var(--md-on-surface-variant)]">
+              {bal === undefined ? "" : bal > 0 ? "payable" : bal < 0 ? "advance" : "settled"}
+            </p>
           </div>
-        </div>
-        <div className="text-right">
-          <p className={`text-sm font-semibold ${(bal ?? 0) > 0 ? "text-red-700" : ""}`}>
-            {bal !== undefined ? fmtINR(Math.abs(bal)) : "…"}
-          </p>
-          <p className="text-xs text-slate-500">
-            {bal === undefined ? "" : bal > 0 ? "Payable" : bal < 0 ? "Advance out" : "Settled"}
-          </p>
-        </div>
-      </Card>
-    </Link>
+        }
+      />
+    </div>
   );
 }
 
@@ -46,23 +50,16 @@ export default function DriversPage() {
   const drivers = useLiveQuery(() => db.drivers.orderBy("name").toArray(), []);
   return (
     <div>
-      <PageHeader
-        title="Drivers"
-        action={
-          <Link href="/drivers/new">
-            <Button size="sm"><Plus size={16} /> Add</Button>
-          </Link>
-        }
-      />
+      <PageHeader title="Drivers" subtitle={drivers ? `${drivers.length} total` : undefined} />
       {drivers && drivers.length === 0 && (
-        <EmptyState
-          message="No drivers yet."
-          action={<Link href="/drivers/new"><Button>Add driver</Button></Link>}
-        />
+        <EmptyState message="No drivers yet. Tap + to add." />
       )}
       <div className="space-y-2">
-        {drivers?.map((d) => <DriverRow key={d.id} id={d.id!} name={d.name} phone={d.phone} />)}
+        {drivers?.map((d, i) => <DriverRow key={d.id} id={d.id!} name={d.name} phone={d.phone} index={i} />)}
       </div>
+      <Fab extended icon={<Plus size={20} />} onClick={() => (window.location.href = "/drivers/new/")}>
+        Add driver
+      </Fab>
     </div>
   );
 }
