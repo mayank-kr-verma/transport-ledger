@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, type Truck } from "@/db/schema";
+import { truckHasAnyTrip } from "@/db/ledger";
 import { Button, Card, Field, Input, Select, Textarea, PageHeader } from "@/components/ui/primitives";
 
 type FormVals = {
@@ -17,7 +18,7 @@ type FormVals = {
 export default function TruckForm({ id }: { id?: number }) {
   const router = useRouter();
   const existing = useLiveQuery(async () => (id ? await db.trucks.get(id) : undefined), [id]);
-  const { register, handleSubmit, reset, formState: { errors, isSubmitting } } =
+  const { register, handleSubmit, reset, setValue, formState: { errors, isSubmitting } } =
     useForm<FormVals>({ defaultValues: { type: "owned" } });
 
   useEffect(() => {
@@ -34,14 +35,18 @@ export default function TruckForm({ id }: { id?: number }) {
     };
     if (id) await db.trucks.update(id, data);
     else await db.trucks.add(data);
-    router.push("/trucks");
+    router.push("/trucks/");
   };
 
   const onDelete = async () => {
     if (!id) return;
-    if (!confirm("Delete this truck? Trips referencing it will keep the id.")) return;
+    if (await truckHasAnyTrip(id)) {
+      alert("Cannot delete: this truck has trips recorded against it. Delete or reassign those trips first.");
+      return;
+    }
+    if (!confirm("Delete this truck?")) return;
     await db.trucks.delete(id);
-    router.push("/trucks");
+    router.push("/trucks/");
   };
 
   return (
@@ -49,8 +54,20 @@ export default function TruckForm({ id }: { id?: number }) {
       <PageHeader title={id ? "Edit Truck" : "Add Truck"} />
       <Card>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-1">
-          <Field label="Truck Number" error={errors.number?.message}>
-            <Input placeholder="MH04 AB 1234" {...register("number", { required: "Required" })} />
+          <Field label="Truck Number" error={errors.number?.message} hint="UPPERCASE, max 10 characters">
+            <Input
+              placeholder="MH04AB1234"
+              maxLength={10}
+              autoCapitalize="characters"
+              autoComplete="off"
+              spellCheck={false}
+              className="uppercase tracking-wider"
+              {...register("number", {
+                required: "Required",
+                maxLength: { value: 10, message: "Max 10 characters" },
+                onChange: (e) => setValue("number", e.target.value.toUpperCase().slice(0, 10)),
+              })}
+            />
           </Field>
           <Field label="Type">
             <Select {...register("type")}>
@@ -69,7 +86,7 @@ export default function TruckForm({ id }: { id?: number }) {
           </Field>
           <div className="mt-4 flex gap-2">
             <Button type="submit" disabled={isSubmitting}>{id ? "Save" : "Add Truck"}</Button>
-            <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
+            <Button type="button" variant="outlined" onClick={() => router.back()}>Cancel</Button>
             {id && (
               <Button type="button" variant="danger" className="ml-auto" onClick={onDelete}>
                 Delete

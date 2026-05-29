@@ -30,7 +30,7 @@ export default function DriverDetail({ id }: { id: number }) {
       <PageHeader
         title={driver.name}
         action={
-          <Button size="sm" variant="secondary" onClick={() => router.push(`/drivers/edit?id=${id}`)}>
+          <Button size="sm" variant="secondary" onClick={() => router.push(`/drivers/edit/?id=${id}`)}>
             <Pencil size={14} /> Edit
           </Button>
         }

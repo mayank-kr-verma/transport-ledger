@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db, type Party } from "@/db/schema";
+import { partyBalance, partyHasAnyTrip } from "@/db/ledger";
 import { toPaise, toRupees } from "@/lib/inr";
 import { Button, Card, Field, Input, Select, Textarea, PageHeader } from "@/components/ui/primitives";
 
@@ -46,7 +47,24 @@ export default function PartyForm({ id }: { id?: number }) {
     };
     if (id) await db.parties.update(id, data);
     else await db.parties.add(data);
-    router.push("/parties");
+    router.push("/parties/");
+  };
+
+  const onDelete = async () => {
+    if (!id) return;
+    if (await partyHasAnyTrip(id)) {
+      alert("Cannot delete: this party has trips recorded. Delete or reassign the trips first.");
+      return;
+    }
+    const bal = await partyBalance(id);
+    if (bal !== 0) {
+      alert(`Cannot delete: outstanding balance is not zero (₹${(Math.abs(bal) / 100).toLocaleString("en-IN")}). Settle the ledger first.`);
+      return;
+    }
+    if (!confirm("Delete this party? This also removes any opening/adjustment ledger entries.")) return;
+    await db.ledger.where("partyId").equals(id).delete();
+    await db.parties.delete(id);
+    router.push("/parties/");
   };
 
   return (
@@ -79,7 +97,12 @@ export default function PartyForm({ id }: { id?: number }) {
           </div>
           <div className="mt-4 flex gap-2">
             <Button type="submit" disabled={isSubmitting}>{id ? "Save" : "Add Party"}</Button>
-            <Button type="button" variant="secondary" onClick={() => router.back()}>Cancel</Button>
+            <Button type="button" variant="outlined" onClick={() => router.back()}>Cancel</Button>
+            {id && (
+              <Button type="button" variant="danger" className="ml-auto" onClick={onDelete}>
+                Delete
+              </Button>
+            )}
           </div>
         </form>
       </Card>

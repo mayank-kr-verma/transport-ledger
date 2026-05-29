@@ -25,7 +25,7 @@ function DriverRow({ id, name, phone, index }: { id: number; name: string; phone
         leading={<UserCog size={20} />}
         title={name}
         supporting={phone || "—"}
-        onClick={() => router.push(`/drivers/view?id=${id}`)}
+        onClick={() => router.push(`/drivers/view/?id=${id}`)}
         trailing={
           <div>
             <p

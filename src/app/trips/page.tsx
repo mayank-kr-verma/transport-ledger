@@ -34,7 +34,7 @@ export default function TripsPage() {
 
       <div className="space-y-3">
         {trips?.map((t, i) => (
-          <Link key={t.id} href={`/trips/edit?id=${t.id}`} className={`md-rise md-rise-${Math.min(i + 1, 6)} block`}>
+          <Link key={t.id} href={`/trips/view/?id=${t.id}`} className={`md-rise md-rise-${Math.min(i + 1, 6)} block`}>
             <Card tone="low" className="md-pressable">
               <div className="mb-3 flex items-center justify-between">
                 <Chip tone={statusTone[t.status]}>{t.status}</Chip>

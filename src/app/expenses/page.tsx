@@ -51,7 +51,7 @@ export default function ExpensesPage() {
                   {e.paidTo ? ` · ${e.paidTo}` : ""}
                 </>
               }
-              onClick={() => router.push(`/expenses/edit?id=${e.id}`)}
+              onClick={() => router.push(`/expenses/edit/?id=${e.id}`)}
               trailing={
                 <p className="font-display text-[16px] font-semibold text-[var(--md-error)]">
                   {fmtINR(e.amount)}
