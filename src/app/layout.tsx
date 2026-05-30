@@ -30,6 +30,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: "cover",
 };
 
 export default function RootLayout({
@@ -40,7 +41,7 @@ export default function RootLayout({
       <body className="min-h-full antialiased">
         <PinGate>
           <BottomNav />
-          <main className="relative mx-auto max-w-3xl px-5 pb-32 pt-5 sm:ml-64 sm:max-w-none sm:px-10 sm:pb-10 sm:pt-8">
+          <main className="md-safe-top relative mx-auto max-w-3xl px-5 pb-40 pt-5 sm:ml-64 sm:max-w-none sm:px-10 sm:pb-10 sm:pt-8">
             {children}
           </main>
         </PinGate>

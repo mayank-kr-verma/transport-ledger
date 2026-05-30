@@ -138,7 +138,7 @@ export default function PartiesPage() {
         ))}
       </div>
 
-      <Fab extended icon={<Plus size={20} />} onClick={() => (window.location.href = "/parties/new/")}>
+      <Fab extended icon={<Plus size={20} />} onClick={() => router.push("/parties/new/")}>
         Add party
       </Fab>
     </div>

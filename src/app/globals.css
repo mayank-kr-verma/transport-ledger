@@ -126,8 +126,11 @@ input, select, textarea, button { font: inherit; color: inherit; }
 ::-webkit-scrollbar-thumb { background: var(--md-outline-variant); border-radius: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
 
-/* Safe areas */
+/* Safe areas — Capacitor edge-to-edge: Android system bars overlap WebView,
+   so always reserve a small floor in case env() reports 0. */
 @supports (padding: max(0px)) {
-  .md-safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 0px); }
-  .md-safe-top    { padding-top: max(env(safe-area-inset-top), 0px); }
+  .md-safe-bottom { padding-bottom: max(env(safe-area-inset-bottom), 12px); }
+  .md-safe-top    { padding-top:    max(env(safe-area-inset-top), 12px); }
 }
+/* FAB sits above the bottom nav + safe area */
+.md-fab-bottom { bottom: calc(env(safe-area-inset-bottom, 12px) + 88px); }

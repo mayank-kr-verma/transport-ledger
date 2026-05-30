@@ -122,7 +122,7 @@ export default function TrucksPage() {
         })}
       </div>
 
-      <Fab extended icon={<Plus size={20} />} onClick={() => (window.location.href = "/trucks/new/")}>
+      <Fab extended icon={<Plus size={20} />} onClick={() => router.push("/trucks/new/")}>
         Add truck
       </Fab>
     </div>

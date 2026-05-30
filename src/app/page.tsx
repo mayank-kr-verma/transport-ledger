@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/db/schema";
 import { fmtINR } from "@/lib/inr";
@@ -23,6 +24,7 @@ function greeting() {
 }
 
 export default function Dashboard() {
+  const router = useRouter();
   const r = monthRange();
   const summary = useLiveQuery(() => plOverall(r), [r.from, r.to]);
   const trucks = useLiveQuery(() => db.trucks.count(), []);
@@ -112,7 +114,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <Fab extended icon={<Plus size={20} />} onClick={() => (window.location.href = "/trips/new/")}>
+      <Fab extended icon={<Plus size={20} />} onClick={() => router.push("/trips/new/")}>
         New trip
       </Fab>
     </div>

@@ -47,6 +47,7 @@ function DriverRow({ id, name, phone, index }: { id: number; name: string; phone
 }
 
 export default function DriversPage() {
+  const router = useRouter();
   const drivers = useLiveQuery(() => db.drivers.orderBy("name").toArray(), []);
   return (
     <div>
@@ -57,7 +58,7 @@ export default function DriversPage() {
       <div className="space-y-2">
         {drivers?.map((d, i) => <DriverRow key={d.id} id={d.id!} name={d.name} phone={d.phone} index={i} />)}
       </div>
-      <Fab extended icon={<Plus size={20} />} onClick={() => (window.location.href = "/drivers/new/")}>
+      <Fab extended icon={<Plus size={20} />} onClick={() => router.push("/drivers/new/")}>
         Add driver
       </Fab>
     </div>

@@ -33,8 +33,8 @@ export default function BottomNav() {
   return (
     <>
       {/* Mobile bottom navigation bar — Material 3 NavigationBar */}
-      <nav className="md-safe-bottom fixed bottom-0 left-0 right-0 z-40 sm:hidden">
-        <div className="border-t border-[var(--md-outline-variant)]/40 bg-[var(--md-surface-container)] backdrop-blur">
+      <nav className="fixed bottom-0 left-0 right-0 z-40 sm:hidden">
+        <div className="md-safe-bottom border-t border-[var(--md-outline-variant)]/40 bg-[var(--md-surface-container)] backdrop-blur">
           <ul className="grid grid-cols-5 px-2 pt-2 pb-2">
             {tabs.map((t) => {
               const active = pathname === t.href || (t.href !== "/" && pathname.startsWith(t.href));

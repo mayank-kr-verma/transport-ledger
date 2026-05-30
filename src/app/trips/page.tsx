@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "@/db/schema";
 import { fmtINR } from "@/lib/inr";
@@ -13,6 +14,7 @@ const statusTone: Record<string, "warning" | "primary" | "success"> = {
 };
 
 export default function TripsPage() {
+  const router = useRouter();
   const trips = useLiveQuery(() => db.trips.orderBy("tripDate").reverse().toArray(), []);
   const trucks = useLiveQuery(() => db.trucks.toArray(), []);
   const parties = useLiveQuery(() => db.parties.toArray(), []);
@@ -67,7 +69,7 @@ export default function TripsPage() {
       <Fab
         extended
         icon={<Plus size={20} />}
-        onClick={() => (window.location.href = "/trips/new/")}
+        onClick={() => router.push("/trips/new/")}
       >
         New trip
       </Fab>

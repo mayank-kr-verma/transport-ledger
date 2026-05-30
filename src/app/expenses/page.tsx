@@ -61,7 +61,7 @@ export default function ExpensesPage() {
           </div>
         ))}
       </div>
-      <Fab extended icon={<Plus size={20} />} onClick={() => (window.location.href = "/expenses/new/")}>
+      <Fab extended icon={<Plus size={20} />} onClick={() => router.push("/expenses/new/")}>
         Add expense
       </Fab>
     </div>

@@ -57,7 +57,7 @@ export const Fab = React.forwardRef<
       className={cn(
         "md-pressable fixed right-5 z-30 inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--md-primary-container)] text-[var(--md-on-primary-container)] font-semibold shadow-[var(--md-elev-3)] hover:shadow-[var(--md-elev-4)]",
         extended ? "h-14 px-5 text-[15px]" : "h-14 w-14 rounded-2xl text-[15px]",
-        "bottom-24 sm:bottom-8",
+        "md-fab-bottom sm:bottom-8",
         className
       )}
       {...props}
